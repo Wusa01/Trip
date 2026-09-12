@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}شجرة {{ person.full_name }} — سجل العشيرة{% endblock %}
+
+{% block extra_head %}
+<script src="https://unpkg.com/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="card-header-row">
+  <div>
+    <h1>شجرة النسب</h1>
+    <div class="muted">حول: {{ person.full_name }} ({{ person.public_id }})</div>
+  </div>
+  <a href="{{ url_for('person.view_person', person_id=person.id) }}" class="btn btn-outline">عودة للبطاقة</a>
+</div>
+
+<div class="card" style="padding:0; overflow:hidden;">
+
+  <div class="tree-toolbar">
+    <div class="tree-search-wrap">
+      <input type="text" id="tree-search-input" placeholder="ابحث عن شخص آخر للانتقال إليه...">
+      <div id="tree-search-results" class="tree-search-results" hidden></div>
+    </div>
+
+    <button id="expand-up" class="btn-outline btn-sm">↑ جيل إضافي للأعلى</button>
+    <button id="expand-down" class="btn-outline btn-sm">↓ جيل إضافي للأسفل</button>
+    <button id="fit-view" class="btn-outline btn-sm">احتواء الكل</button>
+    <button id="recenter-view" class="btn-outline btn-sm">توسيط الشخص الأساسي</button>
+  </div>
+
+  <div id="cy" class="tree-canvas"></div>
+
+  <div class="tree-legend">
+    <span class="legend-item"><span class="legend-swatch legend-male"></span> ذكر</span>
+    <span class="legend-item"><span class="legend-swatch legend-female"></span> أنثى</span>
+    <span class="legend-item"><span class="legend-swatch legend-center"></span> الشخص الأساسي</span>
+    <span class="legend-item"><span class="legend-line legend-line-parent"></span> علاقة أبوة</span>
+    <span class="legend-item"><span class="legend-line legend-line-marriage"></span> زواج</span>
+  </div>
+
+  <div class="tree-status-bar">
+    <span id="tree-status" class="muted small"></span>
+  </div>
+</div>
+
+<p class="muted small">
+  اضغط على أي شخص لفتح بطاقته. الشجرة تُحمَّل تدريجياً (جيلان في كل اتجاه)، ويظهر كل زواج بخط منقّط بين الزوجين.
+</p>
+
+<script>
+  const PERSON_ID = {{ person.id }};
+</script>
+<script src="{{ url_for('static', filename='js/tree.js') }}"></script>
+{% endblock %}

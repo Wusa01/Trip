@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}إضافة الوالدين — {{ person.full_name }}{% endblock %}
+
+{% block content %}
+<h1>إضافة والدَي {{ person.full_name }}</h1>
+<p class="hint">
+  استخدم هذه الشاشة إن كان {{ person.full_name }} مُضافاً بدون أب أو أم معروفَين، واكتشفتَ من هما لاحقاً.
+  يمكنك إدخال الأب فقط، أو الأم فقط، أو كليهما معاً.
+</p>
+
+<div class="card">
+  <form id="add-parents-form">
+
+    <div class="dynamic-section" style="border-top:none; padding-top:0; margin-top:0;">
+      <h3>الأب</h3>
+      <div class="field-row">
+        <div class="field">
+          <label for="father_name">اسم الأب</label>
+          <input type="text" id="father_name" placeholder="اتركه فارغاً إن كان غير معروف">
+        </div>
+        <div class="field">
+          <label for="father_tribe">عشيرة الأب</label>
+          <input type="text" id="father_tribe" list="tribe-options">
+        </div>
+      </div>
+    </div>
+
+    <div class="dynamic-section">
+      <h3>الأم</h3>
+      <div class="field-row">
+        <div class="field">
+          <label for="mother_name">اسم الأم</label>
+          <input type="text" id="mother_name" placeholder="اتركه فارغاً إن كانت غير معروفة">
+        </div>
+        <div class="field">
+          <label for="mother_tribe">عشيرة الأم (الأخوال)</label>
+          <input type="text" id="mother_tribe" list="tribe-options">
+        </div>
+      </div>
+    </div>
+
+    <datalist id="tribe-options">
+      {% for name in tribe_names %}<option value="{{ name }}">{% endfor %}
+    </datalist>
+
+    <div id="form-error" class="form-error" hidden></div>
+
+    <div class="form-actions">
+      <button type="submit">حفظ</button>
+      <a href="{{ url_for('person.view_person', person_id=person.id) }}" class="btn btn-outline">إلغاء</a>
+    </div>
+  </form>
+</div>
+
+<script>
+  const CHILD_PERSON_ID = {{ person.id }};
+</script>
+<script src="{{ url_for('static', filename='js/add_parents_form.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}الرئيسية — سجل العشيرة{% endblock %}
+
+{% block content %}
+<div class="dash-header">
+  <h1>مرحباً بك</h1>
+  <p class="muted">نظرة عامة على سجل العشيرة</p>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon stat-icon-primary">◈</div>
+    <div class="stat-value">{{ stats.total_persons }}</div>
+    <div class="stat-label">إجمالي الأفراد المعتمَدين</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon stat-icon-gold">♂</div>
+    <div class="stat-value">{{ stats.males_count }}</div>
+    <div class="stat-label">الرجال</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon stat-icon-gold">♀</div>
+    <div class="stat-value">{{ stats.females_count }}</div>
+    <div class="stat-label">النساء</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon stat-icon-primary">⌘</div>
+    <div class="stat-value">{{ stats.total_tribes }}</div>
+    <div class="stat-label">العشائر والفروع المسجَّلة</div>
+  </div>
+
+  {% if stats.pending_count is not none %}
+  <a href="{{ url_for('relation.pending_page') }}" class="stat-card stat-card-link {% if stats.pending_count > 0 %}stat-card-alert{% endif %}">
+    <div class="stat-icon stat-icon-warning">!</div>
+    <div class="stat-value">{{ stats.pending_count }}</div>
+    <div class="stat-label">بانتظار المراجعة والاعتماد</div>
+  </a>
+  {% endif %}
+</div>
+
+<div class="dash-grid">
+  <div class="card">
+    <h3>آخر الإضافات</h3>
+    {% if stats.recent_persons %}
+      <div class="results-list">
+        {% for p in stats.recent_persons %}
+        <a href="{{ url_for('person.view_person', person_id=p.id) }}" class="result-row">
+          <div class="result-main">
+            <div class="result-name">{{ p.full_name }}</div>
+            <div class="muted small">
+              {{ p.public_id }}
+              {% if p.tribe %} — {{ p.tribe.tribe_name }}{% endif %}
+              — {{ p.created_at.strftime("%Y-%m-%d") }}
+            </div>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="muted">لا توجد إضافات بعد.</p>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <h3>إجراءات سريعة</h3>
+    <div class="quick-actions">
+      <a href="{{ url_for('person.new_person_form') }}" class="btn">+ إضافة فرد جديد</a>
+      <a href="{{ url_for('person.search_page') }}" class="btn btn-outline">البحث عن فرد</a>
+      {% if current_user.role == 'admin' %}
+      <a href="{{ url_for('auth.download_backup') }}" class="btn btn-outline">تنزيل نسخة احتياطية</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}إنشاء أول حساب — سجل العشيرة{% endblock %}
+
+{% block guest_content %}
+<div class="login-screen">
+  <div class="card login-card">
+    <div style="text-align:center; margin-bottom:22px;">
+      <div class="seal" style="width:48px; height:48px; margin:0 auto 10px; border:1.5px dashed var(--gold); border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-weight:700; color:var(--gold); font-size:1.2rem;">س</div>
+      <h1>مرحباً بك</h1>
+      <p class="muted" style="margin:0;">هذه أول مرة تُفتح فيها المنصة — أنشئ حساب المدير الأول للبدء</p>
+    </div>
+
+    <!-- الخطوة 1: بيانات الحساب -->
+    <form id="setup-step1">
+      <div class="field" style="margin-bottom:14px;">
+        <label for="setup_username">اسم المستخدم</label>
+        <input type="text" id="setup_username" name="username" required autofocus>
+      </div>
+      <div class="field" style="margin-bottom:14px;">
+        <label for="setup_email">البريد الإلكتروني</label>
+        <input type="email" id="setup_email" name="email" required>
+      </div>
+      <div class="field" style="margin-bottom:14px;">
+        <label for="setup_password">كلمة المرور</label>
+        <input type="password" id="setup_password" name="password" required minlength="6">
+      </div>
+      <div class="field" style="margin-bottom:20px;">
+        <label for="setup_confirm_password">تأكيد كلمة المرور</label>
+        <input type="password" id="setup_confirm_password" name="confirm_password" required minlength="6">
+      </div>
+      <div id="setup-step1-error" class="form-error" hidden></div>
+      <button type="submit" id="setup-step1-submit" style="width:100%;">إرسال رمز التفعيل إلى بريدي</button>
+    </form>
+
+    <!-- الخطوة 2: تأكيد رمز التفعيل (مخفية حتى يُرسَل الرمز) -->
+    <form id="setup-step2" hidden>
+      <p class="muted small" style="margin-bottom:14px;">
+        أرسلنا رمز تفعيل من 6 أرقام إلى <strong id="setup-step2-email"></strong>. أدخله أدناه لإتمام إنشاء الحساب.
+      </p>
+      <div class="field" style="margin-bottom:20px;">
+        <label for="setup_code">رمز التفعيل</label>
+        <input type="text" id="setup_code" name="code" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required autofocus>
+      </div>
+      <div id="setup-step2-error" class="form-error" hidden></div>
+      <button type="submit" id="setup-step2-submit" style="width:100%; margin-bottom:10px;">تأكيد وإنشاء الحساب</button>
+      <button type="button" id="setup-back-btn" class="btn-outline" style="width:100%;">رجوع لتعديل البيانات</button>
+    </form>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/setup.js') }}"></script>
+{% endblock %}

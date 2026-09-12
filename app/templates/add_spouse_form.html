@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}إضافة زوجة — {{ person.full_name }}{% endblock %}
+
+{% block content %}
+<h1>{{ "إضافة زوجة لـ" if person.gender == "male" else "إضافة زوج لـ" }} {{ person.full_name }}</h1>
+<p class="hint">
+  بيانات {{ person.full_name }} وعلاقاته السابقة (والداه، إخوته، وباقي زوجاته/أزواجه) تبقى كما هي دون أي تغيير.
+</p>
+
+<!-- تبويب اختيار نوع الإضافة -->
+<div class="tab-switch">
+  <button type="button" class="tab-btn active" data-tab="new">شخص جديد</button>
+  <button type="button" class="tab-btn" data-tab="existing">شخص مسجَّل مسبقاً</button>
+</div>
+
+<!-- تبويب: شخص جديد (الإضافة الاعتيادية) -->
+<div id="tab-new" class="card tab-panel">
+  <form id="new-spouse-form">
+    <div class="field-row">
+      <div class="field">
+        <label for="spouse_name">{{ "اسم الزوجة" if person.gender == "male" else "اسم الزوج" }} *</label>
+        <input type="text" id="spouse_name" required>
+      </div>
+      <div class="field">
+        <label for="spouse_tribe">اسم عشيرتها</label>
+        <input type="text" id="spouse_tribe" list="tribe-options" placeholder="اكتب اسم العشيرة...">
+        <datalist id="tribe-options">
+          {% for name in tribe_names %}<option value="{{ name }}">{% endfor %}
+        </datalist>
+      </div>
+    </div>
+
+    <div class="dynamic-section" style="border-top:none; padding-top:0; margin-top:6px;">
+      <h3>الأبناء (إن وُجدوا)</h3>
+      <div id="children-rows"></div>
+      <button type="button" id="add-child-btn" class="btn-outline btn-sm">+ إضافة ابن/ابنة</button>
+    </div>
+
+    <div id="new-form-error" class="form-error" hidden></div>
+
+    <div class="form-actions">
+      <button type="submit">حفظ</button>
+      <a href="{{ url_for('person.view_person', person_id=person.id) }}" class="btn btn-outline">إلغاء</a>
+    </div>
+  </form>
+</div>
+
+<!-- تبويب: شخص مسجَّل مسبقاً (الحالة الاستثنائية) -->
+<div id="tab-existing" class="card tab-panel" hidden>
+  <p class="hint" style="margin-top:0;">
+    للحالات مثل زواج الأخ من زوجة أخيه المتوفى — اختر شخصاً موجوداً بالفعل في السجل
+    بدل إنشاء سجل جديد له.
+  </p>
+
+  <div class="field picker-field">
+    <label for="existing-spouse-input">ابحث عن الاسم</label>
+    <input type="text" id="existing-spouse-input" placeholder="اكتب الاسم..." autocomplete="off">
+    <div id="existing-spouse-results" class="picker-dropdown" hidden></div>
+    <input type="hidden" id="existing-spouse-id">
+  </div>
+
+  <div id="existing-spouse-confirm" class="select-confirm" hidden></div>
+  <div id="existing-spouse-warning" class="form-error" hidden></div>
+
+  <div class="field" style="max-width:220px; margin-top:10px;">
+    <label for="marriage_date">تاريخ الزواج (اختياري)</label>
+    <input type="date" id="marriage_date">
+  </div>
+
+  <div id="existing-form-error" class="form-error" hidden></div>
+
+  <div class="form-actions">
+    <button type="button" id="link-existing-btn">ربط الزواج</button>
+    <a href="{{ url_for('person.view_person', person_id=person.id) }}" class="btn btn-outline">إلغاء</a>
+  </div>
+</div>
+
+<template id="child-row-template">
+  <div class="field-row child-row">
+    <div class="field">
+      <label>اسم الابن/الابنة</label>
+      <input type="text" class="child-name" required>
+    </div>
+    <div class="field field-narrow">
+      <label>الجنس</label>
+      <select class="child-gender">
+        <option value="male">ذكر</option>
+        <option value="female">أنثى</option>
+      </select>
+    </div>
+    <button type="button" class="btn-outline btn-sm remove-child-btn">حذف</button>
+  </div>
+</template>
+
+<script>
+  const TARGET_PERSON_ID = {{ person.id }};
+</script>
+<script src="{{ url_for('static', filename='js/add_spouse_form.js') }}"></script>
+{% endblock %}

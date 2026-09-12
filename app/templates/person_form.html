@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block title %}إضافة فرد جديد — سجل العشيرة{% endblock %}
+
+{% block content %}
+<h1>إضافة فرد جديد</h1>
+<p class="hint">
+  {% if current_user.role == 'researcher' %}
+    ستُحفظ الإضافة (والأبناء/الزوجات المرفقة) بحالة "قيد المراجعة" حتى يعتمدها المدير.
+  {% endif %}
+</p>
+
+<div class="card">
+  <form id="person-form">
+
+    <div class="field-row">
+      <div class="field">
+        <label for="full_name">الاسم الكامل *</label>
+        <input type="text" id="full_name" name="full_name" required>
+      </div>
+      <div class="field">
+        <label for="gender">الجنس *</label>
+        <select id="gender" name="gender" required>
+          <option value="">اختر...</option>
+          <option value="male">ذكر</option>
+          <option value="female">أنثى</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label for="tribe_name">العشيرة / الفرع</label>
+        <input type="text" id="tribe_name" name="tribe_name" list="tribe-options" placeholder="اكتب اسم العشيرة...">
+        <datalist id="tribe-options">
+          {% for name in tribe_names %}<option value="{{ name }}">{% endfor %}
+        </datalist>
+      </div>
+      <div class="field">
+        <label for="disambiguation_note">ملاحظة تمييز (عند تشابه الاسم)</label>
+        <input type="text" id="disambiguation_note" name="disambiguation_note">
+      </div>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label for="marital_status">الحالة الاجتماعية</label>
+        <select id="marital_status" name="marital_status">
+          <option value="single">أعزب / عزباء</option>
+          <option value="married">متزوج / متزوجة</option>
+          <option value="divorced">مطلق / مطلقة</option>
+          <option value="widowed">أرمل / أرملة</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="is_living">على قيد الحياة؟</label>
+        <select id="is_living" name="is_living">
+          <option value="true">نعم</option>
+          <option value="false">متوفى/ة</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- يظهر فقط عند اختيار "متزوج" -->
+    <div id="spouses-section" class="dynamic-section" hidden>
+      <h3 id="spouses-title">الزوجات</h3>
+      <div id="spouses-rows"></div>
+      <button type="button" id="add-spouse-btn" class="btn-outline btn-sm">+ إضافة زوجة</button>
+    </div>
+
+    <!-- يظهر فقط عند اختيار "مطلق" -->
+    <div id="ex-spouse-section" class="dynamic-section" hidden>
+      <h3 id="ex-spouse-title">الزوج/الزوجة السابق(ة)</h3>
+      <div id="ex-spouse-row"></div>
+    </div>
+
+    <div class="field" style="margin-top:14px;">
+      <label for="notes">ملاحظات</label>
+      <textarea id="notes" name="notes" rows="3"></textarea>
+    </div>
+
+    <div id="form-error" class="form-error" hidden></div>
+
+    <div class="form-actions">
+      <button type="submit">حفظ الفرد وكل من أُضيف معه</button>
+      <a href="{{ url_for('person.search_page') }}" class="btn btn-outline">إلغاء</a>
+    </div>
+  </form>
+</div>
+
+<!-- قالب صف زوجة (يُستنسخ عبر JS) -->
+<template id="spouse-row-template">
+  <div class="spouse-block">
+    <div class="field-row">
+      <div class="field">
+        <label>اسم الزوجة</label>
+        <input type="text" class="spouse-name" required>
+      </div>
+      <div class="field">
+        <label>اسم عشيرتها</label>
+        <input type="text" class="spouse-tribe" list="tribe-options">
+      </div>
+      <button type="button" class="btn-outline btn-sm remove-spouse-btn">حذف الزوجة</button>
+    </div>
+    <div class="children-list"></div>
+    <button type="button" class="btn-outline btn-sm add-child-btn">+ إضافة ابن/ابنة لهذه الزوجة</button>
+  </div>
+</template>
+
+<!-- قالب صف ابن (يُستنسخ داخل كل صف زوجة) -->
+<template id="child-row-template">
+  <div class="field-row child-row">
+    <div class="field">
+      <label>اسم الابن/الابنة</label>
+      <input type="text" class="child-name" required>
+    </div>
+    <div class="field field-narrow">
+      <label>الجنس</label>
+      <select class="child-gender">
+        <option value="male">ذكر</option>
+        <option value="female">أنثى</option>
+      </select>
+    </div>
+    <button type="button" class="btn-outline btn-sm remove-child-btn">حذف</button>
+  </div>
+</template>
+
+<script src="{{ url_for('static', filename='js/person_form.js') }}"></script>
+{% endblock %}

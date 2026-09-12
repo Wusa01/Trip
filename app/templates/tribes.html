@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}العشائر والفروع — سجل العشيرة{% endblock %}
+
+{% block content %}
+<h1>العشائر والفروع</h1>
+
+<div class="card" style="max-width:520px;">
+  <h3>إضافة عشيرة/فرع جديد</h3>
+  <form id="create-tribe-form">
+    <div class="field-row">
+      <div class="field">
+        <label for="new_tribe_name">اسم العشيرة</label>
+        <input type="text" id="new_tribe_name" name="tribe_name" required>
+      </div>
+      <div class="field">
+        <label for="new_branch_name">اسم الفرع (اختياري)</label>
+        <input type="text" id="new_branch_name" name="branch_name">
+      </div>
+    </div>
+    <div id="tribe-form-error" class="form-error" hidden></div>
+    <button type="submit">إضافة</button>
+  </form>
+</div>
+
+<div class="card">
+  <h3>العشائر والفروع المسجّلة</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>اسم العشيرة</th>
+          <th>الفرع</th>
+          <th>عدد الأفراد</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="tribes-table-body">
+        {% for row in rows %}
+        <tr id="tribe-row-{{ row.tribe.id }}" data-id="{{ row.tribe.id }}">
+          <td class="tribe-name-cell">{{ row.tribe.tribe_name }}</td>
+          <td class="branch-name-cell">{{ row.tribe.branch_name or "—" }}</td>
+          <td class="muted small">{{ row.person_count }}</td>
+          <td class="tribe-actions-cell">
+            <button class="btn btn-outline btn-sm edit-btn">تعديل</button>
+            {% if row.person_count == 0 %}
+            <button class="btn btn-outline btn-sm delete-btn">حذف</button>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4" class="muted small">لا توجد عشائر مسجّلة بعد</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p class="muted small">
+    لا يمكن حذف عشيرة مرتبط بها أفراد — يجب نقل هؤلاء الأفراد إلى عشيرة أخرى أولاً.
+  </p>
+</div>
+
+<script src="{{ url_for('static', filename='js/tribes.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% block title %}تعديل بيانات {{ person.full_name }} — سجل العشيرة{% endblock %}
+
+{% block content %}
+<h1>تعديل بيانات {{ person.full_name }}</h1>
+<p class="hint">تعديل البيانات الشخصية، وإدارة الزوجات والأبناء (إضافة ابن نُسي، أو إزالة إدخال خاطئ) في مكان واحد.</p>
+
+<!-- البيانات الشخصية -->
+<div class="card">
+  <h3>البيانات الشخصية</h3>
+  <form id="edit-person-form" enctype="multipart/form-data">
+
+    <div class="field-row" style="align-items:flex-start;">
+      <div class="field" style="flex:0 0 auto;">
+        <label>الصورة الحالية</label>
+        {% if person.photo_path %}
+          <img src="{{ url_for('static', filename=person.photo_path) }}" alt="صورة {{ person.full_name }}"
+               style="width:96px; height:96px; object-fit:cover; border-radius:var(--radius-sm); border:1px solid var(--line);">
+        {% else %}
+          <div style="width:96px; height:96px; border-radius:var(--radius-sm); border:1px dashed var(--line-strong);
+                      display:flex; align-items:center; justify-content:center; color:var(--text-faint); font-size:0.78rem;">
+            لا توجد صورة
+          </div>
+        {% endif %}
+      </div>
+      <div class="field">
+        <label for="photo">تغيير الصورة (اختياري)</label>
+        <input type="file" id="photo" name="photo" accept=".png,.jpg,.jpeg">
+      </div>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label for="full_name">الاسم الكامل *</label>
+        <input type="text" id="full_name" name="full_name" required value="{{ person.full_name }}">
+      </div>
+      <div class="field">
+        <label for="gender">الجنس *</label>
+        <select id="gender" name="gender" required>
+          <option value="male" {% if person.gender == 'male' %}selected{% endif %}>ذكر</option>
+          <option value="female" {% if person.gender == 'female' %}selected{% endif %}>أنثى</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label for="tribe_name">العشيرة / الفرع</label>
+        <input type="text" id="tribe_name" name="tribe_name" list="tribe-options"
+               value="{{ person.tribe.tribe_name if person.tribe else '' }}">
+        <datalist id="tribe-options">
+          {% for name in tribe_names %}<option value="{{ name }}">{% endfor %}
+        </datalist>
+      </div>
+      <div class="field">
+        <label for="disambiguation_note">ملاحظة تمييز</label>
+        <input type="text" id="disambiguation_note" name="disambiguation_note"
+               value="{{ person.disambiguation_note or '' }}">
+      </div>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label for="birth_date">تاريخ الميلاد</label>
+        <input type="date" id="birth_date" name="birth_date" value="{{ person.birth_date or '' }}">
+      </div>
+      <div class="field">
+        <label for="birth_place">مكان الميلاد</label>
+        <input type="text" id="birth_place" name="birth_place" value="{{ person.birth_place or '' }}">
+      </div>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label for="marital_status">الحالة الاجتماعية</label>
+        <select id="marital_status" name="marital_status">
+          <option value="single" {% if person.marital_status == 'single' %}selected{% endif %}>أعزب / عزباء</option>
+          <option value="married" {% if person.marital_status == 'married' %}selected{% endif %}>متزوج / متزوجة</option>
+          <option value="divorced" {% if person.marital_status == 'divorced' %}selected{% endif %}>مطلق / مطلقة</option>
+          <option value="widowed" {% if person.marital_status == 'widowed' %}selected{% endif %}>أرمل / أرملة</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="is_living">على قيد الحياة؟</label>
+        <select id="is_living" name="is_living">
+          <option value="true" {% if person.is_living %}selected{% endif %}>نعم</option>
+          <option value="false" {% if not person.is_living %}selected{% endif %}>متوفى/ة</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="notes">ملاحظات</label>
+      <textarea id="notes" name="notes" rows="3">{{ person.notes or '' }}</textarea>
+    </div>
+
+    <div id="form-error" class="form-error" hidden></div>
+
+    <div class="form-actions">
+      <button type="submit">حفظ التعديلات</button>
+      <a href="{{ url_for('person.view_person', person_id=person.id) }}" class="btn btn-outline">عودة للبطاقة</a>
+    </div>
+  </form>
+</div>
+
+<!-- الزوجات والأبناء -->
+<div class="card">
+  <h3>الزوجات والأبناء</h3>
+  <div id="spouses-manage-box" class="muted">جارٍ التحميل...</div>
+
+  {% if person.gender == 'male' or person.marital_status != 'married' %}
+  <a href="{{ url_for('person.add_spouse_form', person_id=person.id) }}" class="btn btn-outline btn-sm" style="margin-top:14px;">
+    {{ "+ إضافة زوجة جديدة" if person.gender == "male" else "+ إضافة زوج" }}
+  </a>
+  {% endif %}
+</div>
+
+<!-- الوالدان -->
+<div class="card">
+  <h3>الوالدان</h3>
+  <div id="parents-manage-box" class="muted">جارٍ التحميل...</div>
+  <a href="{{ url_for('person.add_parents_form', person_id=person.id) }}" class="btn btn-outline btn-sm" style="margin-top:14px;">
+    إضافة/تصحيح الوالدين
+  </a>
+</div>
+
+<template id="child-item-template">
+  <li class="child-item">
+    <a class="child-link" href="#"></a>
+    <button type="button" class="remove-child-btn" title="إزالة">✕</button>
+  </li>
+</template>
+
+<script>
+  const EDIT_PERSON_ID = {{ person.id }};
+  const IS_ADMIN = {{ "true" if current_user.role == "admin" else "false" }};
+</script>
+<script src="{{ url_for('static', filename='js/edit_person_form.js') }}"></script>
+{% endblock %}

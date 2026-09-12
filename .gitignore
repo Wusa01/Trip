@@ -1,0 +1,30 @@
+# الأسرار — لا تُرفع أبداً
+.env
+
+# بايثون
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.venv/
+venv/
+env/
+
+# قاعدة البيانات الحقيقية والنسخ الاحتياطية — بيانات حقيقية للعشيرة، ليست كوداً
+instance/
+*.db
+*.db.uploaded_tmp
+
+# صور الأفراد المرفوعة
+app/static/uploads/*
+!app/static/uploads/.gitkeep
+
+# خطوط Amiri (كبيرة الحجم، تُحمَّل يدوياً حسب README)
+app/static/fonts/*.ttf
+
+# ملفات المحررات وأنظمة التشغيل
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db

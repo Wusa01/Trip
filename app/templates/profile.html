@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}حسابي — سجل العشيرة{% endblock %}
+
+{% block content %}
+<h1>حسابي</h1>
+
+<div class="card" style="max-width:520px;">
+  <h3>تعديل بيانات الحساب</h3>
+  <form id="profile-form">
+    <div class="field" style="margin-bottom:14px;">
+      <label for="profile_username">اسم المستخدم</label>
+      <input type="text" id="profile_username" name="username" value="{{ current_user.username }}" required>
+    </div>
+    <div class="field" style="margin-bottom:14px;">
+      <label for="profile_email">البريد الإلكتروني</label>
+      <input type="email" id="profile_email" name="email" value="{{ current_user.email or '' }}">
+      <p class="muted small" style="margin:4px 0 0;">يُستخدم كعنوان افتراضي عند إرسال النسخ الاحتياطية بالبريد.</p>
+    </div>
+
+    <hr style="border:none; border-top:1px solid var(--border); margin:18px 0;">
+
+    <div class="field" style="margin-bottom:14px;">
+      <label for="profile_new_password">كلمة مرور جديدة (اتركها فارغة إن لم ترد التغيير)</label>
+      <input type="password" id="profile_new_password" name="new_password" minlength="6">
+    </div>
+    <div class="field" style="margin-bottom:14px;">
+      <label for="profile_confirm_new_password">تأكيد كلمة المرور الجديدة</label>
+      <input type="password" id="profile_confirm_new_password" name="confirm_new_password" minlength="6">
+    </div>
+
+    <hr style="border:none; border-top:1px solid var(--border); margin:18px 0;">
+
+    <div class="field" style="margin-bottom:20px;">
+      <label for="profile_current_password">كلمة المرور الحالية (لتأكيد أي تعديل أعلاه)</label>
+      <input type="password" id="profile_current_password" name="current_password" required>
+    </div>
+
+    <div id="profile-error" class="form-error" hidden></div>
+    <div id="profile-success" class="form-success" hidden>تم حفظ التعديلات بنجاح.</div>
+    <button type="submit">حفظ التعديلات</button>
+  </form>
+</div>
+
+<script src="{{ url_for('static', filename='js/profile.js') }}"></script>
+{% endblock %}

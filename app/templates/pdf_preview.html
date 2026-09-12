@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} — {{ person.full_name }}{% endblock %}
+
+{% block content %}
+<div class="card-header-row">
+  <div>
+    <h1>{{ title }}</h1>
+    <div class="muted">{{ person.full_name }} — {{ person.public_id }}</div>
+  </div>
+  <div style="display:flex; gap:10px;">
+    <a href="{{ url_for('person.view_person', person_id=person.id) }}" class="btn btn-outline">عودة للبطاقة</a>
+    <a href="{{ url_for(download_endpoint, person_id=person.id) }}" class="btn">تصدير / تنزيل PDF</a>
+  </div>
+</div>
+
+<div class="card" style="padding:0; overflow:hidden;">
+  <iframe
+    src="{{ url_for(view_endpoint, person_id=person.id) }}"
+    class="pdf-preview-frame"
+    title="{{ title }}">
+  </iframe>
+</div>
+
+<p class="muted small">
+  إن لم تظهر المعاينة على جهازك (شائع على بعض متصفحات الجوال)، اضغط "تصدير / تنزيل PDF" مباشرة.
+</p>
+{% endblock %}

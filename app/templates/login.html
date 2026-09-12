@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}تسجيل الدخول — سجل العشيرة{% endblock %}
+
+{% block guest_content %}
+<div class="login-screen">
+  <div class="card login-card">
+    <div style="text-align:center; margin-bottom:22px;">
+      <div class="seal" style="width:48px; height:48px; margin:0 auto 10px; border:1.5px dashed var(--gold); border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-weight:700; color:var(--gold); font-size:1.2rem;">س</div>
+      <h1>سجل العشيرة</h1>
+      <p class="muted" style="margin:0;">تسجيل الدخول للمتابعة</p>
+    </div>
+
+    {% if error %}
+    <div class="form-error">{{ error }}</div>
+    {% endif %}
+
+    <form method="post" action="{{ url_for('auth.login') }}">
+      <div class="field" style="margin-bottom:14px;">
+        <label for="username">اسم المستخدم</label>
+        <input type="text" id="username" name="username" required autofocus>
+      </div>
+      <div class="field" style="margin-bottom:20px;">
+        <label for="password">كلمة المرور</label>
+        <input type="password" id="password" name="password" required>
+      </div>
+      <button type="submit" style="width:100%;">دخول</button>
+    </form>
+    <p style="text-align:center; margin:16px 0 0;">
+      <a href="{{ url_for('auth.forgot_password_page') }}" class="muted small">نسيت كلمة المرور؟</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}سجل العشيرة{% endblock %}</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+  {% if current_user.is_authenticated %}
+  <div class="mobile-topbar">
+    <div class="seal">س</div>
+    <div class="title">سجل العشيرة</div>
+    <button type="button" class="menu-toggle" id="menu-toggle" aria-label="القائمة">☰</button>
+  </div>
+
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="seal">س</div>
+        <div class="title">سجل العشيرة</div>
+      </div>
+
+      <nav>
+        <a href="{{ url_for('dashboard.dashboard_page') }}" class="{{ 'active' if request.path == url_for('dashboard.dashboard_page') else '' }}">
+          <span class="nav-icon">⌂</span> الرئيسية
+        </a>
+        <a href="{{ url_for('person.search_page') }}" class="{{ 'active' if request.path == url_for('person.search_page') else '' }}">
+          <span class="nav-icon">⌕</span> البحث عن فرد
+        </a>
+        <a href="{{ url_for('person.new_person_form') }}" class="{{ 'active' if request.path == url_for('person.new_person_form') else '' }}">
+          <span class="nav-icon">+</span> إضافة فرد
+        </a>
+        <a href="{{ url_for('relationship.relationship_page') }}" class="{{ 'active' if request.path == url_for('relationship.relationship_page') else '' }}">
+          <span class="nav-icon">⇄</span> إيجاد العلاقة
+        </a>
+        {% if current_user.role == 'admin' %}
+        <a href="{{ url_for('relation.pending_page') }}" class="{{ 'active' if request.path == url_for('relation.pending_page') else '' }}">
+          <span class="nav-icon">✓</span> مراجعة الإضافات
+        </a>
+        <a href="{{ url_for('auth.users_page') }}" class="{{ 'active' if request.path == url_for('auth.users_page') else '' }}">
+          <span class="nav-icon">☺</span> إدارة المستخدمين
+        </a>
+        <a href="{{ url_for('tribe.tribes_page') }}" class="{{ 'active' if request.path == url_for('tribe.tribes_page') else '' }}">
+          <span class="nav-icon">⌘</span> العشائر والفروع
+        </a>
+        {% endif %}
+      </nav>
+
+      <div class="user-box">
+        <div>{{ current_user.username }} — {{ {"admin": "مدير", "researcher": "باحث", "user": "مستخدم"}.get(current_user.role, current_user.role) }}</div>
+        <a href="{{ url_for('auth.profile_page') }}" class="btn-outline" style="display:block; text-align:center; width:100%; margin-bottom:8px; text-decoration:none;">حسابي</a>
+        <form method="post" action="{{ url_for('auth.logout') }}">
+          <button type="submit" class="btn-outline" style="width:100%;">تسجيل الخروج</button>
+        </form>
+      </div>
+    </aside>
+
+    <main class="main">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+  {% else %}
+    {% block guest_content %}{% endblock %}
+  {% endif %}
+
+  <script src="{{ url_for('static', filename='js/nav.js') }}"></script>
+</body>
+</html>

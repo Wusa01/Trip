@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}البحث عن فرد — سجل العشيرة{% endblock %}
+
+{% block content %}
+<h1>البحث عن فرد</h1>
+
+<div class="card">
+  <form method="get" action="{{ url_for('person.search_page') }}" class="search-form">
+    <input type="text" name="q" value="{{ query_text }}" placeholder="اكتب الاسم الكامل أو جزءاً منه...">
+    <button type="submit">بحث</button>
+  </form>
+</div>
+
+{% if query_text %}
+  <div class="card">
+    {% if results %}
+      <p class="muted" style="margin-top:0;">{{ results|length }} نتيجة عن "{{ query_text }}"</p>
+
+      <div class="results-list">
+        {% for r in results %}
+        {% set p = r.person %}
+        <a href="{{ url_for('person.view_person', person_id=p.id) }}" class="result-row">
+          <div class="result-main">
+            <div class="result-name">{{ p.full_name }}</div>
+
+            <div class="muted small">
+              {% if r.father_name %}الأب: {{ r.father_name }}{% endif %}
+              {% if r.mother_name %} — الأم: {{ r.mother_name }}{% endif %}
+            </div>
+
+            <div class="muted small">
+              {{ p.public_id }}
+              {% if p.tribe %} — عشيرته: {{ p.tribe.tribe_name }}{% endif %}
+              {% if r.maternal_tribe %} — الأخوال: {{ r.maternal_tribe }}{% endif %}
+            </div>
+
+            {% if p.disambiguation_note %}
+              <div class="muted small">{{ p.disambiguation_note }}</div>
+            {% endif %}
+          </div>
+          <span class="stamp stamp-{{ p.status }}">
+            {{ {"approved": "معتمد", "pending": "قيد المراجعة", "rejected": "مرفوض"}.get(p.status, p.status) }}
+          </span>
+        </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="muted">لا توجد نتائج مطابقة لـ "{{ query_text }}".</p>
+    {% endif %}
+  </div>
+{% endif %}
+{% endblock %}

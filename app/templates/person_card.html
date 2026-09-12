@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}{{ person.full_name }} — سجل العشيرة{% endblock %}
+
+{% block content %}
+<div class="card-header-row">
+  <div>
+    <h1>{{ person.full_name }}</h1>
+    <div class="muted">المعرف: {{ person.public_id }}</div>
+  </div>
+  <span class="stamp stamp-{{ person.status }}">
+    {{ {"approved": "معتمد", "pending": "قيد المراجعة", "rejected": "مرفوض"}.get(person.status, person.status) }}
+  </span>
+</div>
+
+<div class="person-layout">
+
+  <div class="card person-main-card">
+    <div class="person-photo-row">
+      {% if data.photo_path %}
+        <img src="{{ url_for('static', filename=data.photo_path) }}" alt="صورة {{ person.full_name }}" class="person-photo">
+      {% else %}
+        <div class="person-photo person-photo-empty">لا توجد صورة</div>
+      {% endif %}
+
+      <div class="person-basic-info">
+        <h2 class="person-full-name">{{ person.full_name }}</h2>
+        {% if person.tribe %}<div class="muted">العشيرة: {{ person.tribe.tribe_name }}</div>{% endif %}
+        <div class="muted">
+          {{ "ذكر" if person.gender == "male" else "أنثى" }} —
+          {{ {"single": "أعزب/عزباء", "married": "متزوج/متزوجة", "divorced": "مطلق/مطلقة", "widowed": "أرمل/أرملة"}.get(person.marital_status, "") }}
+        </div>
+        {% if data.birth_date %}<div class="muted">تاريخ الميلاد: {{ data.birth_date }}</div>{% endif %}
+        <div id="parents-line" class="muted"></div>
+      </div>
+    </div>
+
+    {% if person.notes %}
+      <div class="notes-box"><strong>ملاحظات:</strong> {{ person.notes }}</div>
+    {% endif %}
+
+    <div class="action-buttons">
+      <a href="{{ url_for('person.edit_person_form', person_id=person.id) }}" class="btn">تعديل البيانات</a>
+      <a href="{{ url_for('person.new_person_form') }}" class="btn btn-outline">إضافة فرد جديد</a>
+      <a href="{{ url_for('tree.tree_view', person_id=person.id) }}" class="btn btn-outline">عرض الشجرة</a>
+      <a href="{{ url_for('person.add_parents_form', person_id=person.id) }}" class="btn btn-outline">إضافة الوالدين</a>
+      {% if person.gender == 'male' or person.marital_status != 'married' %}
+      <a href="{{ url_for('person.add_spouse_form', person_id=person.id) }}" class="btn btn-outline">
+        {{ "إضافة زوجة" if person.gender == "male" else "إضافة زوج" }}
+      </a>
+      {% endif %}
+      <a href="{{ url_for('report.person_card_preview', person_id=person.id) }}" class="btn btn-outline">معاينة البطاقة PDF</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>الزوجات والأبناء</h3>
+    <div id="spouses-box" class="muted">جارٍ التحميل...</div>
+    <p class="hint" style="margin-top:12px; margin-bottom:0;">
+      لإضافة ابن نُسي أو تصحيح البيانات، اضغط <a href="{{ url_for('person.edit_person_form', person_id=person.id) }}">تعديل البيانات</a>.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>الإخوة</h3>
+    <div id="siblings-box" class="muted">جارٍ التحميل...</div>
+
+    <div class="report-links">
+      <a href="{{ url_for('report.lineage_report_preview', person_id=person.id) }}" class="btn btn-outline btn-sm">معاينة تقرير النسب</a>
+      <a href="{{ url_for('report.branch_report_preview', person_id=person.id) }}" class="btn btn-outline btn-sm">معاينة تقرير الفرع</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const PERSON_ID = {{ person.id }};
+  const IS_ADMIN = {{ "true" if current_user.role == "admin" else "false" }};
+</script>
+<script src="{{ url_for('static', filename='js/person_card.js') }}"></script>
+{% endblock %}

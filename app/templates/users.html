@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}إدارة المستخدمين — سجل العشيرة{% endblock %}
+
+{% block content %}
+<h1>إدارة المستخدمين</h1>
+
+<div class="card" style="max-width:560px;">
+  <h3>إضافة مستخدم جديد</h3>
+  <form id="create-user-form">
+    <div class="field-row">
+      <div class="field">
+        <label for="new_username">اسم المستخدم</label>
+        <input type="text" id="new_username" name="username" required>
+      </div>
+      <div class="field">
+        <label for="new_password">كلمة المرور</label>
+        <input type="password" id="new_password" name="password" required>
+      </div>
+    </div>
+    <div class="field" style="margin-bottom:14px;">
+      <label for="new_email">البريد الإلكتروني (اختياري)</label>
+      <input type="email" id="new_email" name="email">
+    </div>
+    <div class="field" style="max-width:220px; margin-bottom:14px;">
+      <label for="new_role">الدور</label>
+      <select id="new_role" name="role">
+        <option value="user">مستخدم (بحث ومشاهدة فقط)</option>
+        <option value="researcher">باحث (إضافة تحتاج مراجعة)</option>
+        <option value="admin">مدير (صلاحية كاملة)</option>
+      </select>
+    </div>
+    <div id="user-form-error" class="form-error" hidden></div>
+    <button type="submit">إضافة المستخدم</button>
+  </form>
+</div>
+
+<div class="card">
+  <h3>المستخدمون الحاليون</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>اسم المستخدم</th><th>البريد الإلكتروني</th><th>الدور</th><th>تاريخ الإنشاء</th><th></th></tr>
+      </thead>
+      <tbody id="users-table-body">
+        {% for u in users %}
+        <tr id="user-row-{{ u.id }}" data-id="{{ u.id }}">
+          <td>{{ u.username }}</td>
+          <td class="muted small">{{ u.email or "—" }}</td>
+          <td>{{ {"admin": "مدير", "researcher": "باحث", "user": "مستخدم", "inactive": "معطَّل"}.get(u.role, u.role) }}</td>
+          <td class="muted small">{{ u.created_at.strftime("%Y-%m-%d") }}</td>
+          <td class="user-actions-cell">
+            <button class="btn btn-outline btn-sm reset-pw-btn">إعادة تعيين كلمة المرور</button>
+            {% if u.role != "inactive" and u.id != current_user.id %}
+            <button class="btn btn-outline btn-sm deactivate-btn">تعطيل</button>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card" style="max-width:480px;">
+  <h3>نسخة احتياطية</h3>
+  <p class="muted small">
+    النظام يعمل محلياً على هذا الجهاز فقط — احتفظ بنسخة من قاعدة البيانات بشكل دوري
+    في مكان آخر (بريد إلكتروني، تخزين سحابي) لتفادي فقدان الأرشيف.
+  </p>
+  <a href="{{ url_for('auth.download_backup') }}" class="btn" style="display:inline-block; text-decoration:none; margin-bottom:16px;">تنزيل نسخة احتياطية الآن</a>
+
+  <hr style="border:none; border-top:1px solid var(--border); margin:0 0 16px;">
+
+  <form id="email-backup-form">
+    <div class="field" style="margin-bottom:12px;">
+      <label for="backup_email">إرسال نسخة إلى البريد الإلكتروني</label>
+      <input type="email" id="backup_email" name="email" value="{{ current_user.email or '' }}" placeholder="أدخل بريداً إلكترونياً">
+    </div>
+    <div id="email-backup-error" class="form-error" hidden></div>
+    <div id="email-backup-success" class="form-success" hidden>تم إرسال النسخة بنجاح.</div>
+    <button type="submit" class="btn-outline" style="width:100%;">إرسال نسخة بالبريد الآن</button>
+  </form>
+</div>
+
+<div class="card" style="max-width:480px; border-color:rgba(197,48,48,0.3);">
+  <h3>استيراد نسخة بيانات</h3>
+  <p class="muted small">
+    يستبدل هذا <strong>كل البيانات الحالية</strong> بمحتوى الملف المرفوع — سيُؤخذ نسخة احتياطية
+    تلقائية من البيانات الحالية أولاً للأمان، ثم سيتم تسجيل خروجك تلقائياً
+    لتسجيل الدخول بحساب النسخة المستوردة.
+  </p>
+  <form id="import-form">
+    <div class="field" style="margin-bottom:12px;">
+      <label for="backup_file">ملف النسخة الاحتياطية (.db)</label>
+      <input type="file" id="backup_file" name="backup_file" accept=".db" required>
+    </div>
+    <div class="field" style="margin-bottom:14px;">
+      <label for="import_confirmation">اكتب "نعم" لتأكيد استبدال كل البيانات الحالية</label>
+      <input type="text" id="import_confirmation" name="confirmation" required>
+    </div>
+    <div id="import-error" class="form-error" hidden></div>
+    <button type="submit" class="btn-outline" style="width:100%;">استيراد الآن</button>
+  </form>
+</div>
+
+<script src="{{ url_for('static', filename='js/users.js') }}"></script>
+{% endblock %}

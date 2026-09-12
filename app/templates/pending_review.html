@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}مراجعة الإضافات — سجل العشيرة{% endblock %}
+
+{% block content %}
+<h1>مراجعة الإضافات المعلّقة</h1>
+<p class="hint">علاقات أضافها باحثون بانتظار اعتمادك. الاعتماد يُدرجها في شجرة النسب فعلياً.</p>
+
+<div class="card">
+  {% if pending_relations %}
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>الأب/الأم</th>
+            <th>الابن/الابنة</th>
+            <th>التاريخ</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="pending-table-body">
+          {% for r in pending_relations %}
+          <tr id="row-{{ r.id }}">
+            <td><a href="{{ url_for('person.view_person', person_id=r.parent_id) }}">{{ r.parent.full_name }}</a></td>
+            <td><a href="{{ url_for('person.view_person', person_id=r.child_id) }}">{{ r.child.full_name }}</a></td>
+            <td class="muted small">{{ r.created_at.strftime("%Y-%m-%d") }}</td>
+            <td style="display:flex; gap:8px;">
+              <button class="btn btn-sm approve-btn" data-id="{{ r.id }}">اعتماد</button>
+              <button class="btn btn-outline btn-sm reject-btn" data-id="{{ r.id }}">رفض</button>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="muted">لا توجد إضافات معلّقة حالياً.</p>
+  {% endif %}
+</div>
+
+<script src="{{ url_for('static', filename='js/pending_review.js') }}"></script>
+{% endblock %}

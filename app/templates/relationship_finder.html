@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}إيجاد العلاقة بين شخصين — سجل العشيرة{% endblock %}
+
+{% block extra_head %}
+<script src="https://unpkg.com/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<h1>إيجاد العلاقة بين شخصين</h1>
+<p class="hint">اكتب الاسم واضغط على النتيجة من القائمة لتأكيد الاختيار.</p>
+
+<div class="card">
+  <div class="field-row">
+    <div class="field picker-field">
+      <label for="person-a-input">الشخص الأول</label>
+      <input type="text" id="person-a-input" placeholder="ابحث عن اسم..." autocomplete="off">
+      <div id="person-a-results" class="picker-dropdown" hidden></div>
+      <div id="person-a-confirm" class="select-confirm" hidden></div>
+      <input type="hidden" id="person-a-id">
+    </div>
+    <div class="field picker-field">
+      <label for="person-b-input">الشخص الثاني</label>
+      <input type="text" id="person-b-input" placeholder="ابحث عن اسم..." autocomplete="off">
+      <div id="person-b-results" class="picker-dropdown" hidden></div>
+      <div id="person-b-confirm" class="select-confirm" hidden></div>
+      <input type="hidden" id="person-b-id">
+    </div>
+  </div>
+  <button type="button" id="find-btn" style="margin-top:8px;">إيجاد العلاقة</button>
+  <div id="finder-error" class="form-error" hidden></div>
+</div>
+
+<div id="result-card" class="card" hidden>
+  <div id="relation-summary" class="relation-summary"></div>
+  <div id="rel-cy" class="tree-canvas" style="height:420px;"></div>
+  <div id="path-list" class="path-list"></div>
+</div>
+
+<script src="{{ url_for('static', filename='js/relationship_finder.js') }}"></script>
+{% endblock %}
