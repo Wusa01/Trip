@@ -63,29 +63,110 @@ tribe_registry/
 
 ---
 
-## التثبيت والتشغيل
+## التثبيت للمبتدئين (خطوة بخطوة)
+
+هذا الدليل يفترض أنك لا تملك أي أدوات برمجة مثبَّتة مسبقاً. اتبع الأقسام بالترتيب.
+
+### 1) تثبيت Python وGit حسب نظامك
+
+تحتاج **Python 3.10 أو أحدث** و**Git**. بعد التثبيت تأكد بكتابة `python --version` و`git --version` في الطرفية (يجب أن يظهر رقم إصدار وليس رسالة خطأ).
+
+**Windows:**
+1. حمّل Python من [python.org/downloads](https://www.python.org/downloads/) — **مهم جداً:** فعّل الخيار **"Add python.exe to PATH"** أسفل نافذة التثبيت قبل الضغط على Install، وإلا لن تعمل الأوامر لاحقاً.
+2. حمّل Git من [git-scm.com](https://git-scm.com/downloads) وثبّته بالإعدادات الافتراضية.
+3. افتح **PowerShell** أو **Git Bash** (تُثبَّت مع Git) لتنفيذ باقي الأوامر.
+
+**macOS:**
+```bash
+# إن لم يكن Homebrew مثبتاً، ثبّته أولاً من brew.sh، ثم:
+brew install python git
+```
+
+**Linux (Ubuntu / Debian):**
+```bash
+sudo apt update
+sudo apt install python3 python3-pip python3-venv git -y
+```
+
+**Linux (Fedora):**
+```bash
+sudo dnf install python3 python3-pip git -y
+```
+
+**Android (Termux):**
+```bash
+pkg update && pkg upgrade
+pkg install python git -y
+```
+
+### 2) تحميل المشروع من GitHub
+
+اختر إحدى الطريقتين:
+
+**أ) عبر المتصفح (لا تحتاج Git لهذه الطريقة):**
+افتح [github.com/Wusa01/Trip](https://github.com/Wusa01/Trip) ← اضغط الزر الأخضر **Code** ← **Download ZIP** ← فك الضغط في المكان الذي تريده.
+
+**ب) عبر Git (الأفضل، لأنها تسهّل تحديث المشروع لاحقاً بأمر واحد):**
+```bash
+git clone https://github.com/Wusa01/Trip.git
+cd Trip
+```
+(الرابط تجده أيضاً خلف زر **Code** على GitHub، اختر HTTPS)
+
+### 3) إنشاء بيئة افتراضية (venv)
+
+هذه خطوة مهمة تعزل مكتبات المشروع عن بقية النظام، بدل تثبيتها بشكل عام على جهازك:
 
 ```bash
-# 1. تثبيت المكتبات
+python -m venv venv
+```
+
+ثم فعِّلها (يجب تكرار هذا الأمر في كل مرة تفتح فيها طرفية جديدة للعمل على المشروع):
+
+```bash
+# Windows (PowerShell):
+venv\Scripts\activate
+
+# Windows (Git Bash) / macOS / Linux / Termux:
+source venv/bin/activate
+```
+
+عند التفعيل الناجح سترى `(venv)` تظهر في بداية سطر الأوامر.
+
+### 4) تثبيت مكتبات المشروع
+
+```bash
 pip install -r requirements.txt
+```
 
-# 2. تحميل خط Amiri ووضعه في app/static/fonts/
-#    Amiri-Regular.ttf و Amiri-Bold.ttf
-#    المصدر: https://fonts.google.com/specimen/Amiri
+### 5) تحميل خط Amiri
 
-# 3. إعداد البريد الإلكتروني (لازم لرمز التفعيل وإرسال النسخ الاحتياطية)
+المشروع يحتاج خط Amiri لتوليد تقارير PDF عربية:
+1. حمّل `Amiri-Regular.ttf` و`Amiri-Bold.ttf` من [fonts.google.com/specimen/Amiri](https://fonts.google.com/specimen/Amiri)
+2. ضعهما داخل مجلد `app/static/fonts/`
+
+### 6) إعداد البريد الإلكتروني (لازم لرمز التفعيل وإرسال النسخ الاحتياطية)
+
+```bash
 cp .env.example .env
-# ثم افتح .env وضع فيه:
-#   MAIL_USERNAME=بريد Gmail الكامل
-#   MAIL_APP_PASSWORD=كلمة مرور تطبيقات من 16 خانة
-# طريقة إنشائها:
-#   1) فعّل "التحقق بخطوتين" من myaccount.google.com/security
-#   2) اذهب إلى myaccount.google.com/apppasswords وأنشئ كلمة مرور جديدة
-#   3) انسخها في MAIL_APP_PASSWORD (وليس كلمة مرور Gmail العادية)
+```
+ثم افتح ملف `.env` بأي محرر نصوص وضع فيه:
+```
+MAIL_USERNAME=بريد Gmail الكامل
+MAIL_APP_PASSWORD=كلمة مرور تطبيقات من 16 خانة
+```
+طريقة إنشاء كلمة مرور التطبيقات:
+1. فعّل "التحقق بخطوتين" من myaccount.google.com/security
+2. اذهب إلى myaccount.google.com/apppasswords وأنشئ كلمة مرور جديدة
+3. انسخها في `MAIL_APP_PASSWORD` (وليس كلمة مرور Gmail العادية)
 
-# 4. تشغيل النظام
+### 7) تشغيل النظام
+
+```bash
 python run.py
 ```
+
+> تذكّر: في كل مرة تعود فيها لتشغيل المشروع من جديد (بعد إغلاق الطرفية)، يجب تفعيل البيئة الافتراضية أولاً بأمر `source venv/bin/activate` (أو `venv\Scripts\activate` على Windows) قبل `python run.py`.
 
 افتح المتصفح على `http://127.0.0.1:5000` — بما أنه لا يوجد أي حساب بعد، ستظهر لك تلقائياً **صفحة إنشاء أول حساب مدير**:
 1. أدخل اسم المستخدم، البريد الإلكتروني، وكلمة المرور
@@ -141,4 +222,5 @@ python run.py
 - **الألوان:** حبر أخضر-كُحلي داكن، ورق عتيق باهت، نحاسي مطفأ (لون الأختام)، أحمر طيني (لشارات الحالة فقط)
 - **الخطوط:** Amiri للعناوين وأسماء الأفراد (نفس خط تقارير PDF)، Cairo للواجهة والبيانات
 - **العنصر المميز:** شارة "ختم" دائرية بحدود منقّطة لحالة الاعتماد (معتمد / قيد المراجعة / مرفوض)
+
 
