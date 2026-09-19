@@ -42,6 +42,9 @@
         <a href="{{ url_for('relationship.relationship_page') }}" class="{{ 'active' if request.path == url_for('relationship.relationship_page') else '' }}">
           <span class="nav-icon">⇄</span> إيجاد العلاقة
         </a>
+        <a href="{{ url_for('social.social_page') }}" class="{{ 'active' if request.path.startswith('/social') else '' }}">
+          <span class="nav-icon">☖</span> الأصدقاء والجيران
+        </a>
         {% if current_user.role == 'admin' %}
         <a href="{{ url_for('relation.pending_page') }}" class="{{ 'active' if request.path == url_for('relation.pending_page') else '' }}">
           <span class="nav-icon">✓</span> مراجعة الإضافات

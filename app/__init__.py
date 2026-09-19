@@ -33,6 +33,34 @@ def _ensure_email_column(app):
         conn.close()
 
 
+def _ensure_person_type_column(app):
+    """
+    ترحيل تلقائي خفيف مماثل لـ _ensure_email_column: يضيف عمود person_type
+    إلى جدول persons إن كانت قاعدة البيانات من نسخة أقدم لا تحتوي عليه
+    (قبل إضافة ميزة "الأصدقاء والجيران"). جدول social_links الجديد
+    يُنشأ تلقائياً عبر db.create_all() فلا يحتاج ترحيلاً يدوياً.
+    """
+    db_uri = app.config["SQLALCHEMY_DATABASE_URI"]
+    if not db_uri.startswith("sqlite:///"):
+        return
+
+    db_path = db_uri.replace("sqlite:///", "")
+    if not os.path.exists(db_path):
+        return
+
+    conn = sqlite3.connect(db_path)
+    try:
+        cur = conn.cursor()
+        cur.execute("PRAGMA table_info(persons)")
+        existing_columns = [row[1] for row in cur.fetchall()]
+
+        if "person_type" not in existing_columns:
+            cur.execute("ALTER TABLE persons ADD COLUMN person_type VARCHAR(20) NOT NULL DEFAULT 'family'")
+            conn.commit()
+    finally:
+        conn.close()
+
+
 def create_app(config_class="config.Config"):
     app = Flask(__name__)
     app.config.from_object(config_class)
@@ -55,6 +83,7 @@ def create_app(config_class="config.Config"):
     from app.routes.report_routes import report_bp
     from app.routes.relationship_routes import relationship_bp
     from app.routes.tribe_routes import tribe_bp
+    from app.routes.social_routes import social_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(dashboard_bp)
@@ -64,10 +93,12 @@ def create_app(config_class="config.Config"):
     app.register_blueprint(report_bp)
     app.register_blueprint(relationship_bp)
     app.register_blueprint(tribe_bp)
+    app.register_blueprint(social_bp)
 
     with app.app_context():
         db.create_all()
         _ensure_email_column(app)
+        _ensure_person_type_column(app)
 
     @app.context_processor
     def inject_locale():

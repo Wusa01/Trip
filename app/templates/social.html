@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}الأصدقاء والجيران — سجل العشيرة{% endblock %}
+
+{% block content %}
+<h1>الأصدقاء والجيران</h1>
+<p class="hint">
+  شبكة العلاقات الاجتماعية — أصدقاء وجيران العشيرة وعائلاتهم (زوجاتهم وأبناؤهم)،
+  منفصلة عن نسب العشيرة الأصلي، مع إمكانية ربط كل منهم بفرد من العشيرة عند الحاجة.
+</p>
+
+<div class="tab-switch">
+  <a href="{{ url_for('social.social_page') }}" class="tab-btn {{ 'active' if not entry_type else '' }}" style="text-decoration:none; display:inline-block;">الكل</a>
+  <a href="{{ url_for('social.social_page', type='friend') }}" class="tab-btn {{ 'active' if entry_type == 'friend' else '' }}" style="text-decoration:none; display:inline-block;">الأصدقاء</a>
+  <a href="{{ url_for('social.social_page', type='neighbor') }}" class="tab-btn {{ 'active' if entry_type == 'neighbor' else '' }}" style="text-decoration:none; display:inline-block;">الجيران</a>
+</div>
+
+{% if current_user.role in ('admin', 'researcher') %}
+<div class="form-actions" style="margin:14px 0;">
+  <a href="{{ url_for('social.new_social_form', type='friend') }}" class="btn">+ إضافة صديق</a>
+  <a href="{{ url_for('social.new_social_form', type='neighbor') }}" class="btn btn-outline">+ إضافة جار</a>
+</div>
+{% endif %}
+
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>الاسم</th>
+          <th>النوع</th>
+          <th>العشيرة</th>
+          <th>مرتبط بـ (من العشيرة)</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in entries %}
+        <tr>
+          <td>{{ row.person.full_name }}</td>
+          <td>
+            <span class="relation-type-badge" style="padding:3px 12px; font-size:0.8rem;">
+              {{ "صديق" if row.person.person_type == "friend" else "جار" }}
+            </span>
+          </td>
+          <td class="muted small">{{ row.person.tribe.tribe_name if row.person.tribe else "—" }}</td>
+          <td class="muted small">
+            {% if row.linked_person %}
+              {{ row.linked_person.full_name }}{% if row.link_note %} — {{ row.link_note }}{% endif %}
+            {% else %}
+              —
+            {% endif %}
+          </td>
+          <td class="tribe-actions-cell">
+            <a href="{{ url_for('person.view_person', person_id=row.person.id) }}" class="btn btn-outline btn-sm">البطاقة</a>
+            <a href="{{ url_for('tree.tree_view', person_id=row.person.id) }}" class="btn btn-outline btn-sm">الشجرة</a>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5" class="muted small">لا يوجد أصدقاء أو جيران مسجَّلون بعد</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

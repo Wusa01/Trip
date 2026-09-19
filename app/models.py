@@ -75,6 +75,11 @@ class Person(db.Model):
     # pending | approved | rejected — لدعم مراجعة إضافات الباحث
     status = db.Column(db.String(20), nullable=False, default="pending")
 
+    # family (فرد من نسب العشيرة نفسها) | friend (صديق) | neighbor (جار)
+    # يُستخدم لفصل شبكة العلاقات الاجتماعية (الأصدقاء/الجيران وعائلاتهم)
+    # عن نسب العشيرة الأصلي، مع بقاء نفس آلية الشجرة/الزواج/الأبناء.
+    person_type = db.Column(db.String(20), nullable=False, default="family")
+
     created_by = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
@@ -147,6 +152,34 @@ class Marriage(db.Model):
 
     husband = db.relationship("Person", foreign_keys=[husband_id])
     wife = db.relationship("Person", foreign_keys=[wife_id])
+
+
+class SocialLink(db.Model):
+    """
+    ربط اختياري بين جذر شخص خارجي (صديق/جار) وأحد أفراد العشيرة الذي
+    تربطه به هذه العلاقة (مثلاً: "هذا صديق لفلان بن فلان"). الربط اختياري —
+    يمكن تسجيل صديق/جار دون تحديد فرد معيّن من العشيرة.
+    """
+    __tablename__ = "social_links"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    # جذر عائلة الصديق/الجار (person.person_type == friend|neighbor)
+    person_id = db.Column(db.Integer, db.ForeignKey("persons.id"), nullable=False)
+
+    # الفرد من العشيرة المرتبط به، إن وُجد
+    linked_person_id = db.Column(db.Integer, db.ForeignKey("persons.id"), nullable=True)
+
+    note = db.Column(db.String(255), nullable=True)
+
+    created_by = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    person = db.relationship("Person", foreign_keys=[person_id])
+    linked_person = db.relationship("Person", foreign_keys=[linked_person_id])
+
+    def __repr__(self):
+        return f"<SocialLink person={self.person_id} linked={self.linked_person_id}>"
 
 
 class AuditLog(db.Model):

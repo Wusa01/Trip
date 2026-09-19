@@ -103,6 +103,7 @@ def create_person(data, created_by_id, photo_file=None, auto_approve=False):
         notes=data.get("notes"),
         is_living=data.get("is_living", True),
         status="approved" if auto_approve else "pending",
+        person_type=data.get("person_type", "family"),
         created_by=created_by_id,
     )
 
