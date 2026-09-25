@@ -14,6 +14,9 @@ jobs:
       - name: Show current directory
         run: pwd
 
+      - name: Show the files like tree
+        run: tree
+
       - name: List repository files
         run: ls -la
 
