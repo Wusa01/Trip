@@ -1,12 +1,26 @@
-name: Hello GitHub Actions
+name: Explore GitHub Runner
 
 on:
   push:
 
 jobs:
-  hello:
+  explore:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Say Hello
-        run: echo "Hello from GitHub Actions!"
+      - name: Show current directory
+        run: pwd
+
+      - name: List files
+        run: ls -la
+
+      - name: Show user
+        run: whoami
+
+      - name: Show Ubuntu information
+        run: |
+          uname -a
+          cat /etc/os-release
+
+      - name: Show Python version
+        run: python3 --version
