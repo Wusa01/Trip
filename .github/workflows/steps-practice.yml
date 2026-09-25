@@ -1,0 +1,31 @@
+name: practice
+
+on:
+ push
+
+jobs:
+
+practice:
+ runs: ubuntu-latest
+
+ steps:
+
+  -name: Actions Checkout
+   use: actions/checkout@v4
+
+  -name: Current directory
+   run: pwd
+
+  -name: List Files
+   run: ls -la
+
+  -name: Git version
+   run: git status
+
+  -name: Python Version
+   run: python --version
+
+  -run: |
+    echo "I am learning GitHub Actions"
+    whoami
+    uname -a
