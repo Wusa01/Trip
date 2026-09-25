@@ -1,4 +1,4 @@
-name: Explore GitHub Runner
+name: Checkout Practice
 
 on:
   push:
@@ -8,19 +8,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Show current directory
         run: pwd
 
-      - name: List files
+      - name: List repository files
         run: ls -la
 
-      - name: Show user
-        run: whoami
-
-      - name: Show Ubuntu information
-        run: |
-          uname -a
-          cat /etc/os-release
-
-      - name: Show Python version
-        run: python3 --version
+      - name: Show Git status
+        run: git status
