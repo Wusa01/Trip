@@ -12,3 +12,8 @@ jobs:
       - name: manually started
         run: echo "I manually started this workflow"
 
+      - name: manually
+        run: echo "This workflow was started manually"
+
+      - name: Learning GitHub Actions
+        run: echo "Learning GitHub Actions step by step"
